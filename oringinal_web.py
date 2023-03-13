@@ -9,9 +9,9 @@ from texts import Texts
 import pickle
 import cirpy
 import os
+from rdkit import Chem
 from rdkit.Chem import AllChem, Draw
 from rdkit.Chem import MACCSkeys
-from rdkit import Chem
 from rdkit.Chem import rdDepictor, Descriptors
 from rdkit.Chem.Draw import rdMolDraw2D
 from PIL import Image
