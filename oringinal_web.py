@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 
 IMAGE_SUPP = Image.open('picture/FeS.png')
 IMG_Fig1 = Image.open('picture/FeS.png')
-IMG_Fig2 = Image.open('pictures/O3.png')
+IMG_Fig2 = Image.open('picture/O3.png')
 
 class BackEnd:
     def __init__(self):
