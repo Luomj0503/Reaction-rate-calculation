@@ -1,3 +1,4 @@
+pip == 23.0.1
 streamlit-option-menu==0.3.2
 CIRpy==1.0.2
 rdkit-pypi==2021.3.2.1
