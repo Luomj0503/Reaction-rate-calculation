@@ -10,10 +10,9 @@ import pickle
 import cirpy
 import os
 from rdkit import Chem
-from rdkit.Chem import AllChem, Draw
-from rdkit.Chem import MACCSkeys
-from rdkit.Chem import rdDepictor, Descriptors
-from rdkit.Chem.Draw import rdMolDraw2D
+#from rdkit.Chem import AllChem, Draw
+#from rdkit.Chem import rdDepictor, Descriptors
+#from rdkit.Chem.Draw import rdMolDraw2D
 from PIL import Image
 import seaborn as sns
 sns.set_style('darkgrid')
@@ -51,8 +50,8 @@ class BackEnd:
             except:
                 mc = Chem.Mol(mol.ToBinary())
         if not mc.GetNumConformers():
-            rdDepictor.Compute2DCoords(mc)
-        drawer = rdMolDraw2D.MolDraw2DSVG(molSize[0], molSize[1])
+            Chem.rdDepictor.Compute2DCoords(mc)
+        drawer = Chem.Draw.rdMolDraw2D.MolDraw2DSVG(molSize[0], molSize[1])
         drawer.DrawMolecule(mc)
         drawer.FinishDrawing()
         svg = drawer.GetDrawingText()
@@ -67,13 +66,13 @@ class BackEnd:
     def _makeMorganFingerPrint(self, smiles, nbits: int, raio=2):
         mol = Chem.MolFromSmiles(smiles)
         bi = {}
-        fp = AllChem.GetMorganFingerprintAsBitVect(mol, nBits=nbits, radius=raio, bitInfo=bi)
+        fp = Chem.AllChem.GetMorganFingerprintAsBitVect(mol, nBits=nbits, radius=raio, bitInfo=bi)
         fp = np.array([x for x in fp])
         return fp, bi
 
     def _makeMaccsFingerprint(self, smiles):
         mol = Chem.MolFromSmiles(smiles)
-        fps = MACCSkeys.GenMACCSKeys(mol)
+        fps = Chem.MACCSkeys.GenMACCSKeys(mol)
         fps = np.array([fp for fp in fps])
         return fps
 
