@@ -3,3 +3,4 @@ streamlit-option-menu==0.3.2
 CIRpy==1.0.2
 rdkit-pypi==2021.3.2.1
 seaborn==0.11.2
+xgboost==1.6.0
