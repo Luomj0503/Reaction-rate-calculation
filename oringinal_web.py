@@ -20,9 +20,9 @@ import matplotlib.pyplot as plt
 #from state import count_sessions
 #count_sessions()
 
-IMAGE_SUPP = Image.open('Pictures/3.png')
-IMG_Fig1 = Image.open('Pictures/FeS.png')
-IMG_Fig2 = Image.open('Pictures/O3.png')
+IMAGE_SUPP = Image.open('picture/FeS.png')
+IMG_Fig1 = Image.open('picture/FeS.png')
+IMG_Fig2 = Image.open('pictures/O3.png')
 
 class BackEnd:
     def __init__(self):
