@@ -20,9 +20,9 @@ import matplotlib.pyplot as plt
 #from state import count_sessions
 #count_sessions()
 
-IMAGE_SUPP = Image.open('/Users/lmj/Downloads/pySiRC-master/pySiRC/figs/logos.png')
-IMG_Fig1 = Image.open('/Users/lmj/Pictures/FeS.png')
-IMG_Fig2 = Image.open('/Users/lmj/Pictures/O3.png')
+IMAGE_SUPP = Image.open('Pictures/3.png')
+IMG_Fig1 = Image.open('Pictures/FeS.png')
+IMG_Fig2 = Image.open('Pictures/O3.png')
 
 class BackEnd:
     def __init__(self):
@@ -33,18 +33,12 @@ class BackEnd:
 
     #@st.cache_data
     def __load_models(self):
-        self.kS_morgan_xgb = pickle.load(open(r'/Users/lmj/Desktop/超算数据/XGBoostZVI/Models/FeS-1206XGB_mdl1.dat', 'rb'))
-        self.kS_morgan_nn = pickle.load(open("/Users/lmj/Desktop/超算数据/XGBoostZVI/Models/FeS-1206XGB_mdl2.dat", 'rb'))
-        self.kS_morgan_rf= pickle.load(open("/Users/lmj/Desktop/超算数据/XGBoostZVI/Models/FeS-1206XGB_mdl3.dat", 'rb'))
-        self.OS_morgan_xgb = pickle.load(open(r'/Users/lmj/Desktop/超算数据/XGBoostO3/Models/O3 all new-1206XGB_mdl1.dat', 'rb'))
-        self.OS_morgan_nn = pickle.load(open("/Users/lmj/Desktop/超算数据/XGBoostO3/Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
-        self.OS_morgan_rf= pickle.load(open("/Users/lmj/Desktop/超算数据/XGBoostO3/Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
-
-
-
-
-
-
+        self.kS_morgan_xgb = pickle.load(open(r'Models/FeS-1206XGB_mdl1.dat', 'rb'))
+        self.kS_morgan_nn = pickle.load(open("Models/FeS-1206XGB_mdl2.dat", 'rb'))
+        self.kS_morgan_rf= pickle.load(open("Models/FeS-1206XGB_mdl3.dat", 'rb'))
+        self.OS_morgan_xgb = pickle.load(open(r'Models/O3 all new-1206XGB_mdl1.dat', 'rb'))
+        self.OS_morgan_nn = pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
+        self.OS_morgan_rf= pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
 
 
     def __moltosvg(self, mol, molSize=(320, 320), kekulize=True):
