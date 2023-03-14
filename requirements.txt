@@ -6,3 +6,7 @@ rdkit == 2022.9.5
 seaborn==0.11.2
 xgboost==1.6.0
 Chem == 1.2.0
+rdkit.Chem
+rdkit.Chem.Draw
+
+
