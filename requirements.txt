@@ -5,4 +5,4 @@ seaborn==0.11.2
 xgboost==1.6.0
 Chem == 1.2.0
 OpenCV-python-headless == 4.7.0.72
-git+https://github.com/kuelumbus/rdkit
+git+https://github.com/kuelumbus/rdkit-pypi
