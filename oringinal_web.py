@@ -150,14 +150,6 @@ class FrontEnd(BackEnd):
                             pred = self.kS_morgan_rf.predict(feature_w_smiles)[0]
                             st.markdown('## {}: {}'.format(i, pred))
 
-
-
-
-
-
-
-
-
         if nav == 'O3 Reaction Rate Simulation':
             st.title('Simulation of reaction rate between O3 and organic pollutants')
             smi_casrn = st.text_input('Type SMILES or CAS Number', 'C(=C(Cl)Cl)Cl')
@@ -229,7 +221,7 @@ class FrontEnd(BackEnd):
                     """
 
             st.markdown(contact_form, unsafe_allow_html=True)
-            FrontEnd.local_css("/Users/lmj/Downloads/pySiRC-master/pySiRC/style/style.css")
+            FrontEnd.local_css("style.css")
 
     def local_css(file_name):
         with open(file_name) as f:
