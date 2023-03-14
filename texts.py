@@ -10,7 +10,7 @@ class Texts:
         <body style='text-align: justify; color: black;'>
         <p> general description based on Machine Learning models using molecular fingerprints.It is only necessary to inform the SMILES or CAS Number format of a specific molecule.
         The models present in this work were built using <a href="https://scikit-learn.org/stable/"target="_blank">scikit-learn</a> and <a href="https://xgboost.readthedocs.io/en/latest/python/python_api.html"target="_blank">XGBoost</a> packages.
-        The predict values can be confronted with experimental values available in our work . 
+        The predict values can be confronted with experimental values available in our work.
         </p>
         </body>         
         """
