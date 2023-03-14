@@ -2,7 +2,7 @@ pip == 23.0.1
 streamlit-option-menu==0.3.2
 CIRpy==1.0.2
 rdkit-pypi==2021.3.2.1
-rdkit == 2022.9.5-dev
+rdkit == 2022.9.5
 seaborn==0.11.2
 xgboost==1.6.0
 Chem == 1.2.0
