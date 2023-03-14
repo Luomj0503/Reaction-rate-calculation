@@ -12,8 +12,8 @@ import os
 import rdkit
 from rdkit import Chem
 from rdkit.Chem import AllChem, Draw
-#from rdkit.Chem import rdDepictor, Descriptors
-#from rdkit.Chem.Draw import rdMolDraw2D
+from rdkit.Chem import rdDepictor, Descriptors
+from rdkit.Chem.Draw import rdMolDraw2D
 from PIL import Image
 import seaborn as sns
 sns.set_style('darkgrid')
