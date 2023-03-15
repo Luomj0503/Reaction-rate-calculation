@@ -48,12 +48,15 @@ class BackEnd:
 
     def __moltosvg(self, mol, molSize=(320, 320), kekulize=True):
         mol = Chem.MolFromSmiles(mol)
-        mc = Chem.Mol(mol.ToBinary())
+        pkl = pickle.dumps(mol)
+        mc = pickle.loads(pkl)
+        #mc = Chem.Mol(mol.ToBinary())
         if kekulize:
             try:
                 Chem.Kekulize(mc)
             except:
-                mc = Chem.Mol(mol.ToBinary())
+                mc = pickle.loads(pkl)
+                #mc = Chem.Mol(mol.ToBinary())
         if not mc.GetNumConformers():
             rdDepictor.Compute2DCoords(mc)
         drawer = rdMolDraw2D.MolDraw2DSVG(molSize[0], molSize[1])
