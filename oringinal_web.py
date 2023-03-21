@@ -127,7 +127,7 @@ class FrontEnd(BackEnd):
             pH = st.number_input('Choose pH(3~8)',3.0, 8.0)
             T = st.number_input('Choose T(20~50)',20.0, 50.0)
             FeS_con = st.number_input("Concentration of S-ZVI(g/L)", 0.0, 8.0)
-            S_Fe = st.number_input("Ratio of Sulfur Content to Iron Content(g/L)", 0.0, 0.4)
+            S_Fe = st.number_input("Ratio of Sulfur Content to Iron Content", 0.0, 0.4)
             Cod = st.number_input("Concentration of Organic pollutant(mol/L)", 0.0, 8.0)
             fprints = st.radio("Choose type molecular fingerprint", ('Morgan', 'MACCS', 'both'))
             cmodels = st.multiselect("Choose ML Models", ("XGBoost", "Neural Network", "Random Forest"),
@@ -142,21 +142,21 @@ class FrontEnd(BackEnd):
                             feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
                             feature_w_smiles = feature_w_smiles.reshape(1, -1)
                             pred = self.kS_morgan_xgb.predict(feature_w_smiles)
-                            st.markdown('## {}: {}'.format(i, pred))
+                            st.markdown('## {}: {} h<sup>-1</sup>'.format(i, pred))
                         elif i =="Neural Network":
                             fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
                             fp = fp.reshape(1, -1)
                             feature_w_smiles = np.append(fp,[pH, T, Cod, S_Fe, FeS_con])
                             feature_w_smiles = feature_w_smiles.reshape(1,-1)
                             pred = self.kS_morgan_nn.predict(feature_w_smiles)[0]
-                            st.markdown('## {}: {}'.format(i, pred))
+                            st.markdown('## {}: {} h<sup>-1</sup>'.format(i, pred))
                         elif i =="Random Forest":
                             fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
                             fp = fp.reshape(1, -1)
                             feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
                             feature_w_smiles = feature_w_smiles.reshape(1, -1)
                             pred = self.kS_morgan_rf.predict(feature_w_smiles)[0]
-                            st.markdown('## {}: {}'.format(i, pred))
+                            st.markdown('## {}: {} h<sup>-1</sup>'.format(i, pred))
 
         if nav == 'O3 Reaction Rate Simulation':
             st.title('Simulation of reaction rate between O3 and organic pollutants')
@@ -193,21 +193,21 @@ class FrontEnd(BackEnd):
                             feature_w_smiles = np.append(fp, [pH, T, Cod, O3_con])
                             feature_w_smiles = feature_w_smiles.reshape(1, -1)
                             pred = self.OS_morgan_xgb.predict(feature_w_smiles)[0]
-                            st.markdown('## {}: {}'.format(i, pred))
+                            st.markdown('## {}: {} h<sup>-1</sup>'.format(i, pred))
                         elif i =="Neural Network":
                             fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
                             fp = fp.reshape(1, -1)
                             feature_w_smiles = np.append(fp,[pH, T, Cod, O3_con])
                             feature_w_smiles = feature_w_smiles.reshape(1,-1)
                             pred = self.OS_morgan_nn.predict(feature_w_smiles)[0]
-                            st.markdown('## {}: {}'.format(i, pred))
+                            st.markdown('## {}: {} h<sup>-1</sup>'.format(i, pred))
                         elif i =="Random Forest":
                             fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
                             fp = fp.reshape(1, -1)
                             feature_w_smiles = np.append(fp, [pH, T, Cod, O3_con])
                             feature_w_smiles = feature_w_smiles.reshape(1, -1)
                             pred = self.OS_morgan_rf.predict(feature_w_smiles)[0]
-                            st.markdown('## {}: {}'.format(i, pred))
+                            st.markdown('## {}: {} h<sup>-1</sup>'.format(i, pred))
 
         if nav == 'About':
             st.markdown('{}'.format(self.text3), unsafe_allow_html=True)
