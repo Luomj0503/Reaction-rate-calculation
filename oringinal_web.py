@@ -142,21 +142,21 @@ class FrontEnd(BackEnd):
                             feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
                             feature_w_smiles = feature_w_smiles.reshape(1, -1)
                             pred = self.kS_morgan_xgb.predict(feature_w_smiles)
-                            st.markdown('## {}: {} h$^-1$'.format(i, pred))
+                            st.markdown('## {}: {} h$^(-1)$'.format(i, pred))
                         elif i =="Neural Network":
                             fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
                             fp = fp.reshape(1, -1)
                             feature_w_smiles = np.append(fp,[pH, T, Cod, S_Fe, FeS_con])
                             feature_w_smiles = feature_w_smiles.reshape(1,-1)
                             pred = self.kS_morgan_nn.predict(feature_w_smiles)[0]
-                            st.markdown('## {}: {} h$^-1$'.format(i, pred))
+                            st.markdown('## {}: {} h$^(-1)$'.format(i, pred))
                         elif i =="Random Forest":
                             fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
                             fp = fp.reshape(1, -1)
                             feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
                             feature_w_smiles = feature_w_smiles.reshape(1, -1)
                             pred = self.kS_morgan_rf.predict(feature_w_smiles)[0]
-                            st.markdown('## {}: {} h$^-1$'.format(i, pred))
+                            st.markdown('## {}: {} h$^(-1)$'.format(i, pred))
 
         if nav == 'O3 Reaction Rate Simulation':
             st.title('Simulation of reaction rate between O3 and organic pollutants')
