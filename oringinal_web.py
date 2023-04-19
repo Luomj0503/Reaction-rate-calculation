@@ -50,7 +50,7 @@ class BackEnd:
         self.OS_morgan_nn = pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
         self.OS_morgan_rf= pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
 
-        def __load_basestrain(self):
+    def __load_basestrain(self):
         kO3_morgan = 'Similarity_calculation/MF_O3.csv'
         kFeS_morgan = 'Similarity_calculation/MF_FeS.csv'
         kO3_maccs = 'Similarity_calculation/MACCS_O3.csv'
