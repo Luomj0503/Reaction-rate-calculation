@@ -130,13 +130,13 @@ class BackEnd:
         mol = Chem.MolFromSmiles(smiles)
         bi = {}
         fp = AllChem.GetMorganFingerprintAsBitVect(mol, nBits=nbits, radius=raio, bitInfo=bi)
-        fp = np.array([x for x in fp])
+        fp = np.array(fp)
         return fp, bi
 
     def _makeMaccsFingerprint(self, smiles):
         mol = Chem.MolFromSmiles(smiles)
         fps = MACCSkeys.GenMACCSKeys(mol)
-        fps = np.array([fp for fp in fps])
+        fps = np.array(fps)
         return fps
 
 
@@ -203,15 +203,15 @@ class FrontEnd(BackEnd):
                             fp = fp.reshape(1, -1)
                             feature_w_smiles = np.append(fp,[pH, T, Cod, S_Fe, FeS_con])
                             feature_w_smiles = feature_w_smiles.reshape(1,-1)
-                            pred = self.kS_morgan_nn.predict(feature_w_smiles)[0]
-                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                            pred = self.kS_morgan_nn.predict(feature_w_smiles)
+                            st.markdown('## {}: {} h$-$$1$'.format(i, pred),unsafe_allow_html=True)
                         elif i =="Random Forest":
                             fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
                             fp = fp.reshape(1, -1)
                             feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
                             feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                            pred = self.kS_morgan_rf.predict(feature_w_smiles)[0]
-                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                            pred = self.kS_morgan_rf.predict(feature_w_smiles)
+                            st.markdown('## {}: {} h$-$$1$'.format(i, pred),unsafe_allow_html=True)
                         # calc AD
                         sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='morgan',radical='kFeS')
                         st.markdown('<font color="green">The molecule is within the applicability domain. ({}% Similarity)</font>'.format(
