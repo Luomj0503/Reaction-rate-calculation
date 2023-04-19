@@ -214,7 +214,7 @@ class FrontEnd(BackEnd):
                             st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
                         # calc AD
                         sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='morgan',radical='kFeS')
-                        st.markdown('<font color="green">The molecule is within the applicability domain. ({}% Similarity)</font>'.format(
+                        st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
                                 (sim * 100).round(2)), unsafe_allow_html=True)
 
         if nav == 'O3 Reaction Rate Simulation':
@@ -269,7 +269,7 @@ class FrontEnd(BackEnd):
                             st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
                          # calc AD
                         sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='morgan',radical='kO3')
-                        st.markdown('<font color="green">The molecule is within the applicability domain. ({}% Similarity)</font>'.format(
+                        st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
                                 (sim * 100).round(2)), unsafe_allow_html=True)
 
         if nav == 'About':
