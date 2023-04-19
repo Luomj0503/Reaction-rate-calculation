@@ -5,6 +5,8 @@ import streamlit_option_menu
 from streamlit_option_menu import option_menu
 import base64
 import textwrap
+from Similarity_calculation import ApplicabilityDomain
+
 from texts import Texts
 import pickle
 import cirpy
@@ -34,6 +36,9 @@ class BackEnd:
         self.OS_morgan_xgb = None
         self.OS_morgan_nn = None
         self.OS_morgan_rf = None
+        self.ad = ApplicabilityDomain()
+        self.base_train_kO3_morgan, self.base_train_kFeS_morgan, self.base_train_kO3_maccs, self.base_train_kFeS_maccs, self.base_train_kO3_both, self.base_train_kFeS_both = BackEnd.__load_basestrain(self)
+
         BackEnd.__load_models(self)
 
     #@st.cache_data
@@ -45,7 +50,57 @@ class BackEnd:
         self.OS_morgan_nn = pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
         self.OS_morgan_rf= pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
 
+        def __load_basestrain(self):
+        kO3_morgan = 'Similarity_calculation/MF_O3.csv'
+        kFeS_morgan = 'Similarity_calculation/MF_FeS.csv'
+        kO3_maccs = 'Similarity_calculation/MACCS_O3.csv'
+        kFeS_maccs = 'Similarity_calculation/MACCS_FeS.csv'
+        kO3_both = 'Similarity_calculation/Both_O3.csv'
+        kFeS_both = 'Similarity_calculation/Both_FeS.csv'
 
+        self.base_train_kO3_morgan = pd.read_csv(kO3_morgan).values
+        self.base_train_kFeS_morgan = pd.read_csv(kFeS_morgan).values
+        self.base_train_kO3_maccs = pd.read_csv(kO3_maccs).values
+        self.base_train_kFeS_maccs = pd.read_csv(kFeS_maccs).values
+        self.base_train_kO3_both = pd.read_csv(kO3_both).values
+        self.base_train_kFeS_both = pd.read_csv(kFeS_both).values
+        return self.base_train_kO3_morgan, self.base_train_kFeS_morgan, self.base_train_kO3_maccs, self.base_train_kFeS_maccs, self.base_train_kO3_both, self.base_train_kFeS_both
+
+    def _applicabilitydomain(self, data, typefp: str, radical: str):
+        if typefp == 'morgan':
+            if radical == 'kFeS':
+                get_simdf = self.ad.analyze_similarity(base_test=data, base_train=self.base_train_kFeS_morgan)
+                similiraty = get_simdf['Max'].values
+                return similiraty
+
+            elif radical == 'kO3':
+                get_simdf = self.ad.analyze_similarity(base_test=data, base_train=self.base_train_kO3_morgan)
+                similiraty = get_simdf['Max'].values
+                return similiraty
+
+        elif typefp == 'maccs':
+            if radical == 'kFeS':
+                get_simdf = self.ad.analyze_similarity(base_test=data, base_train=self.base_train_kFeS_maccs)
+                similiraty = get_simdf['Max'].values
+                return similiraty
+
+            elif radical == 'kO3':
+                get_simdf = self.ad.analyze_similarity(base_test=data, base_train=self.base_train_kOH_maccs)
+                similiraty = get_simdf['Max'].values
+                return similiraty
+
+        elif typefp == 'both':
+            if radical == 'kFeS':
+                get_simdf = self.ad.analyze_similarity(base_test=data, base_train=self.base_train_kFeS_both)
+                similiraty = get_simdf['Max'].values
+                return similiraty
+
+            elif radical == 'kO3':
+                get_simdf = self.ad.analyze_similarity(base_test=data, base_train=self.base_train_kO3_both)
+                similiraty = get_simdf['Max'].values
+                return similiraty
+
+    
     def __moltosvg(self, mol, molSize=(320, 320), kekulize=True):
         mol = Chem.MolFromSmiles(mol)
         pkl = pickle.dumps(mol)
@@ -157,6 +212,10 @@ class FrontEnd(BackEnd):
                             feature_w_smiles = feature_w_smiles.reshape(1, -1)
                             pred = self.kS_morgan_rf.predict(feature_w_smiles)[0]
                             st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        # calc AD
+                        sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='morgan',radical='kFeS')
+                        st.markdown('<font color="green">The molecule is within the applicability domain. ({}% Similarity)</font>'.format(
+                                (sim * 100).round(2)), unsafe_allow_html=True)
 
         if nav == 'O3 Reaction Rate Simulation':
             st.title('Simulation of reaction rate between O3 and organic pollutants')
@@ -208,6 +267,10 @@ class FrontEnd(BackEnd):
                             feature_w_smiles = feature_w_smiles.reshape(1, -1)
                             pred = self.OS_morgan_rf.predict(feature_w_smiles)[0]
                             st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                         # calc AD
+                        sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='morgan',radical='kO3')
+                        st.markdown('<font color="green">The molecule is within the applicability domain. ({}% Similarity)</font>'.format(
+                                (sim * 100).round(2)), unsafe_allow_html=True)
 
         if nav == 'About':
             st.markdown('{}'.format(self.text3), unsafe_allow_html=True)
