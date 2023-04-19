@@ -204,7 +204,7 @@ class FrontEnd(BackEnd):
                             feature_w_smiles = np.append(fp,[pH, T, Cod, S_Fe, FeS_con])
                             feature_w_smiles = feature_w_smiles.reshape(1,-1)
                             pred = self.kS_morgan_nn.predict(feature_w_smiles)
-                            st.markdown('## {}: {} h$_-$$_1$'.format(i, pred),unsafe_allow_html=True)
+                            st.markdown('## {}: {} h$_-1$'.format(i, pred),unsafe_allow_html=True)
                         elif i =="Random Forest":
                             fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
                             fp = fp.reshape(1, -1)
