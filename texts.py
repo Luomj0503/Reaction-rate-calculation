@@ -61,7 +61,7 @@ class Texts:
     def text2(_self):
         TEXT2 = """
         This web platform is free and open source and you are very welcome to contribute.
-        This Application has GNU GPL license. All source code can be accessed [here](https://github.com/Mphyschem/pySiRC).
+        This Application has GNU GPL license. All source code can be accessed [here](https://github.com/Luomj0503).
         """
 
         return TEXT2
