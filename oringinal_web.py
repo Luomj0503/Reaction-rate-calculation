@@ -184,7 +184,7 @@ class FrontEnd(BackEnd):
             FeS_con = st.number_input("Concentration of S-ZVI(g/L)", 0.0, 8.0)
             S_Fe = st.number_input("Ratio of Sulfur Content to Iron Content", 0.0, 0.4)
             Cod = st.number_input("Concentration of Organic pollutant(mol/L)", 0.0, 8.0)
-            fprints = st.radio("Choose type molecular fingerprint", ('Morgan', 'MACCS', 'both'))
+            fprints = st.radio("Choose type molecular fingerprint", ('Morgan', 'MACCS', 'Both'))
             cmodels = st.multiselect("Choose ML Models", ("XGBoost", "Neural Network", "Random Forest"),
                                      default="Neural Network")
             generate = st.button("Generate")
@@ -216,7 +216,72 @@ class FrontEnd(BackEnd):
                         sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='morgan',radical='kFeS')
                         st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
                                 (sim * 100).round(2)), unsafe_allow_html=True)
+                        
+                if fprints =="MACCS":
+                    for i in cmodels:
+                        if i =="XGBoost":
+                            fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp = fp.reshape(1, -1)
+                            feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                            pred = self.kS_morgan_xgb.predict(feature_w_smiles)#change method
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        elif i =="Neural Network":
+                            fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp = fp.reshape(1, -1)
+                            feature_w_smiles = np.append(fp,[pH, T, Cod, S_Fe, FeS_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1,-1)
+                            pred = self.kS_morgan_nn.predict(feature_w_smiles)#change method
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        elif i =="Random Forest":
+                            fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp = fp.reshape(1, -1)
+                            feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                            pred = self.kS_morgan_rf.predict(feature_w_smiles)#change method
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        # calc AD
+                        sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='maccs',radical='kFeS')
+                        st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
+                                (sim * 100).round(2)), unsafe_allow_html=True)
+                        
+                        
+               if fprints =="Both":
+                    for i in cmodels:
+                        if i =="XGBoost":
+                            fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp1 = fp1.reshape(1, -1)
+                            fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                            fp2 = fp2.reshape(1, -1)
+                            feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, S_Fe, FeS_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                            pred = self.kS_morgan_xgb.predict(feature_w_smiles)#change method
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        elif i =="Neural Network":
+                            fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp1 = fp1.reshape(1, -1)
+                            fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                            fp2 = fp2.reshape(1, -1)
+                            feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, S_Fe, FeS_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1,-1)
+                            pred = self.kS_morgan_nn.predict(feature_w_smiles)#change method
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        elif i =="Random Forest":
+                            fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp1 = fp1.reshape(1, -1)
+                            fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                            fp2 = fp2.reshape(1, -1)
+                            feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, S_Fe, FeS_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                            pred = self.kS_morgan_rf.predict(feature_w_smiles)#change method
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        # calc AD
+                        sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='both',radical='kFeS')
+                        st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
+                                (sim * 100).round(2)), unsafe_allow_html=True)
 
+                        
+                        
         if nav == 'O3 Reaction Rate Simulation':
             st.title('Simulation of reaction rate between O3 and organic pollutants')
             smi_casrn = st.text_input('Type SMILES or CAS Number', 'C(=C(Cl)Cl)Cl')
@@ -237,7 +302,7 @@ class FrontEnd(BackEnd):
             T = st.number_input('Choose T(20~50)',20.0, 50.0)
             O3_con = st.number_input("Concentration of O3(g/L)", 0.0, 8.0)
             Cod = st.number_input("Concentration of Organic pollutant(mol/L)",0.0,8.0)
-            fprints = st.radio("Choose type molecular fingerprint", ('Morgan', 'MACCS', 'both'))
+            fprints = st.radio("Choose type molecular fingerprint", ('Morgan', 'MACCS', 'Both'))
 
 
             cmodels = st.multiselect("Choose ML Models", ("XGBoost", "Neural Network", "Random Forest"),
@@ -271,6 +336,69 @@ class FrontEnd(BackEnd):
                         sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='morgan',radical='kO3')
                         st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
                                 (sim * 100).round(2)), unsafe_allow_html=True)
+                        
+                if fprints =="MACCS":
+                    for i in cmodels:
+                        if i =="XGBoost":
+                            fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp = fp.reshape(1, -1)
+                            feature_w_smiles = np.append(fp, [pH, T, Cod, O3_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                            pred = self.OS_morgan_xgb.predict(feature_w_smiles)[0]
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        elif i =="Neural Network":
+                            fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp = fp.reshape(1, -1)
+                            feature_w_smiles = np.append(fp,[pH, T, Cod, O3_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1,-1)
+                            pred = self.OS_morgan_nn.predict(feature_w_smiles)[0]
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        elif i =="Random Forest":
+                            fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp = fp.reshape(1, -1)
+                            feature_w_smiles = np.append(fp, [pH, T, Cod, O3_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                            pred = self.OS_morgan_rf.predict(feature_w_smiles)[0]
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                         # calc AD
+                        sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='maccs',radical='kO3')
+                        st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
+                                (sim * 100).round(2)), unsafe_allow_html=True) 
+                        
+                        
+                if fprints =="Both":
+                    for i in cmodels:
+                        if i =="XGBoost":
+                            fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp1 = fp1.reshape(1, -1)
+                            fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                            fp2 = fp2.reshape(1, -1)
+                            feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, O3_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                            pred = self.OS_morgan_xgb.predict(feature_w_smiles)[0]
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        elif i =="Neural Network":
+                            fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp1 = fp1.reshape(1, -1)
+                            fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                            fp2 = fp2.reshape(1, -1)
+                            feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, O3_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1,-1)
+                            pred = self.OS_morgan_nn.predict(feature_w_smiles)[0]
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        elif i =="Random Forest":
+                            fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                            fp1 = fp1.reshape(1, -1)
+                            fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                            fp2 = fp2.reshape(1, -1)
+                            feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, O3_con])
+                            feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                            pred = self.OS_morgan_rf.predict(feature_w_smiles)[0]
+                            st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                         # calc AD
+                        sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='both',radical='kO3')
+                        st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
+                                (sim * 100).round(2)), unsafe_allow_html=True) 
 
         if nav == 'About':
             st.markdown('{}'.format(self.text3), unsafe_allow_html=True)
