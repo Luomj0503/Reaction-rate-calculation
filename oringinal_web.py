@@ -184,7 +184,7 @@ class FrontEnd(BackEnd):
             FeS_con = st.number_input("Concentration of S-ZVI(g/L)", 0.0, 8.0)
             S_Fe = st.number_input("Ratio of Sulfur Content to Iron Content", 0.0, 0.4)
             Cod = st.number_input("Concentration of Organic pollutant(mol/L)", 0.0, 8.0)
-            fprints = st.radio("Choose type molecular fingerprint", ('Morgan', 'MACCS', 'both'))
+            fprints = st.radio("Choose type molecular fingerprint", ('Morgan', 'MACCS', 'Both'))
             cmodels = st.multiselect("Choose ML Models", ("XGBoost", "Neural Network", "Random Forest"),
                                      default="Neural Network")
             generate = st.button("Generate")
@@ -246,7 +246,7 @@ class FrontEnd(BackEnd):
                                 (sim * 100).round(2)), unsafe_allow_html=True)
                         
                         
-               if fprints =="both":
+                if fprints =="Both":
                     for i in cmodels:
                         if i =="XGBoost":
                             fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
@@ -302,7 +302,7 @@ class FrontEnd(BackEnd):
             T = st.number_input('Choose T(20~50)',20.0, 50.0)
             O3_con = st.number_input("Concentration of O3(g/L)", 0.0, 8.0)
             Cod = st.number_input("Concentration of Organic pollutant(mol/L)",0.0,8.0)
-            fprints = st.radio("Choose type molecular fingerprint", ('Morgan', 'MACCS', 'both'))
+            fprints = st.radio("Choose type molecular fingerprint", ('Morgan', 'MACCS', 'Both'))
 
 
             cmodels = st.multiselect("Choose ML Models", ("XGBoost", "Neural Network", "Random Forest"),
@@ -366,7 +366,7 @@ class FrontEnd(BackEnd):
                                 (sim * 100).round(2)), unsafe_allow_html=True) 
                         
                         
-                if fprints =="both":
+                if fprints =="Both":
                     for i in cmodels:
                         if i =="XGBoost":
                             fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
