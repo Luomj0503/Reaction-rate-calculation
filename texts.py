@@ -75,7 +75,7 @@ class Texts:
         using Machine Learning models, since the theoretical calculation and experimental measures of these kinetic
         parameters can be extremely challenging. The tools are designed to be quick and simple users with few clicks
         can make the prediction. The tools are rigorous enough to have applications in academic research.
-        All the source code for this application and the steps for local installation are at <a href="https://github.com/Luomj0503/Reaction-rate-calculation"target="_blank">GitHub</a>.
+        All the source code for this application and the steps for local installation are at <a href="https://scikit-learn.org/stable/"target="_blank">GitHub</a>.
         You are free to use, change and distribute this application under the GNU GPL license. The maintainers of this
         package so far are: Flávio Olimpio Sanches Neto (flavio_olimpio@outlook.com), Jefferson Richard Dias (jrichardquimica@gmail.com),
         and Vitor Mendes (vitor.mendes.ag@gmail.com).
