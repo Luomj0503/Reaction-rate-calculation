@@ -25,7 +25,7 @@ class Similarity:
         T(A,B) = (A ^ B)/(A + B - A^B)
         """
         AnB, onlyA, onlyB, AuB_0s = Similarity.__coefs(self, vetor1=vetor1, vetor2=vetor2)
-        return AnB.sum() / (onlyA.sum() + onlyB.sum() + AnB.sum())
+        return AnB.sum() / (onlyA.sum() + onlyB.sum() - AnB.sum())
 
 
 class ApplicabilityDomain:
