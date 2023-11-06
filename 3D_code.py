@@ -60,8 +60,8 @@ class FrontEnd(BackEnd):
         # HOME
         if nav == 'HOME':
             st.header('Printability Under Different Printing Conditions by Python Simulator')
-            st.markdown('{}'.format(self.text10), unsafe_allow_html=True)  # general description
-            st.markdown('{}'.format(self.text10_2), unsafe_allow_html=True)  # The prediction of FeS
+            st.markdown('{}'.format(self.text1), unsafe_allow_html=True)  # general description
+            st.markdown('{}'.format(self.text1_2), unsafe_allow_html=True)  # The prediction of FeS
             st.image(IMG_Fig1)  # figure of 3D_flow
             col1, col2, col3 = st.columns([0.2, 5, 0.2])
         if nav == 'Printability':
