@@ -68,7 +68,7 @@ class FrontEnd(BackEnd):
             st.title('Simulation of Printability by Different Printing Conditions')
             Pressure = st.number_input('Choose Pressure(Pa)',0.0, 120.0)
             Speed = st.number_input('Choose Speed(mm/s)',0.0, 10.0)
-            Nozzle_Diameter = st.number_input('Diameter of nozzle(mm)', 0, 0.9)
+            Nozzle_Diameter = st.number_input('Diameter of nozzle(mm)', 0.0, 0.9)
             Con = st.number_input('Concentration of Sodium alginate ink', 0.0, 0.2)
             cmodels = st.multiselect("Choose ML Models", ("XGBoost", "Neural Network", "Random Forest"),
                                      default="Neural Network")
