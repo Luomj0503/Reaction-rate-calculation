@@ -73,9 +73,9 @@ class FrontEnd(BackEnd):
             if generate:
                 for i in cmodels:
                     if i =="XGBoost":
-                        np = []
-                        feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
-                        #feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        fp = []
+                        feature_w_smiles = np.append(fp,[Pressure, Speed, Nozzle_Diameter, Con])
+                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
                         pred = self.D_xgb.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
@@ -88,9 +88,9 @@ class FrontEnd(BackEnd):
                         st.markdown('## {}: {} '.format(i, printability),unsafe_allow_html=True)
                         
                     elif i =="Neural Network":
-                        np = []
-                        feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
-                        #feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        fp = []
+                        feature_w_smiles = np.append(fp,[Pressure, Speed, Nozzle_Diameter, Con])
+                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
                         pred = self.D_nn.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
@@ -103,9 +103,9 @@ class FrontEnd(BackEnd):
                         st.markdown('## {}: {} '.format(i, printability),unsafe_allow_html=True)
 
                     elif i =="Random Forest":
-                        np = []
-                        feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
-                        #feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        fp = []
+                        feature_w_smiles = np.append(fp,[Pressure, Speed, Nozzle_Diameter, Con])
+                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
                         pred = self.D_rf.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
