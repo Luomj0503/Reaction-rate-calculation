@@ -81,11 +81,11 @@ class FrontEnd(BackEnd):
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
                         pred = self.kS_morgan_xgb.predict(feature_w_smiles)
-                        if pred > = 0.9:
+                        if pred >= 0.9:
                             printability = 'excellent'
-                        elif 0.9> pred > = 0.8:
+                        elif 0.9> pred >= 0.8:
                             printability = 'good'
-                        elif 0.8> pred > = 0.7 :
+                        elif 0.8> pred >= 0.7 :
                             printability = 'Ok'
                         elif 0.7> pred :
                             printability = 'bad'                            
@@ -96,11 +96,11 @@ class FrontEnd(BackEnd):
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
                         pred = self.kS_morgan_xgb.predict(feature_w_smiles)
-                        if pred > = 0.9:
+                        if pred >= 0.9:
                             printability = 'excellent'
-                        elif 0.9> pred > = 0.8:
+                        elif 0.9> pred >= 0.8:
                             printability = 'good'
-                        elif 0.8> pred > = 0.7 :
+                        elif 0.8> pred >= 0.7 :
                             printability = 'Ok'
                         elif 0.7> pred :
                             printability = 'bad'
@@ -111,11 +111,11 @@ class FrontEnd(BackEnd):
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
                         pred = self.kS_morgan_xgb.predict(feature_w_smiles)
-                        if pred > = 0.9:
+                        if pred >= 0.9:
                             printability = 'excellent'
-                        elif 0.9> pred > = 0.8:
+                        elif 0.9> pred >= 0.8:
                             printability = 'good'
-                        elif 0.8> pred > = 0.7 :
+                        elif 0.8> pred >= 0.7 :
                             printability = 'Ok'
                         elif 0.7> pred :
                             printability = 'bad' 
