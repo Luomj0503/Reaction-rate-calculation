@@ -20,21 +20,20 @@ import matplotlib.pyplot as plt
 
 IMAGE_SUPP = Image.open('picture/3D_flow.png')
 IMG_Fig1 = Image.open('picture/3D_flow.png')
-IMG_Fig2 = Image.open('picture/O3.png')
 
 class BackEnd:
     def __init__(self):
-        self.3D_nn = None
-        self.3D_xgb = None
-        self.3D_rf = None
+        self.D_nn = None
+        self.D_xgb = None
+        self.D_rf = None
         
         BackEnd.__load_models(self)
 
     #@st.cache_data
     def __load_models(self):
-        self.3D_nn = pickle.load(open(r'3D_Models/DNN_mdl1.dat', 'rb'))
-        self.3D_xgb = pickle.load(open("3D_Models/DNN_mdl2.dat", 'rb'))
-        self.3D_rf= pickle.load(open("3D_Models/DNN_mdl2.dat", 'rb'))
+        self.D_nn = pickle.load(open("3D_Models/DNN_mdl1.dat", 'rb'))
+        self.D_xgb = pickle.load(open("3D_Models/DNN_mdl2.dat", 'rb'))
+        self.D_rf= pickle.load(open("3D_Models/DNN_mdl2.dat", 'rb'))
         
 
     
@@ -75,7 +74,7 @@ class FrontEnd(BackEnd):
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.3D_xgb.predict(feature_w_smiles)
+                        pred = self.D_xgb.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
                         elif 0.9> pred >= 0.8:
@@ -90,7 +89,7 @@ class FrontEnd(BackEnd):
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.3D_nn.predict(feature_w_smiles)
+                        pred = self.D_nn.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
                         elif 0.9> pred >= 0.8:
@@ -105,7 +104,7 @@ class FrontEnd(BackEnd):
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.3D_rf.predict(feature_w_smiles)
+                        pred = self.D_rf.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
                         elif 0.9> pred >= 0.8:
