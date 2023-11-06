@@ -62,7 +62,7 @@ class FrontEnd(BackEnd):
             st.image(IMG_Fig1)  # figure of 3D_flow
             col1, col2, col3 = st.columns([0.2, 5, 0.2])
         if nav == 'Printability':
-            st.title('Simulation of Printability by Different Printing Conditions')
+            st.title('Simulation of Printability under Different Printing Conditions')
             Pressure = st.number_input('Choose Pressure(Pa)',0.0, 120.0)
             Speed = st.number_input('Choose Speed(mm/s)',0.0, 10.0)
             Nozzle_Diameter = st.number_input('Diameter of nozzle(mm)', 0.0, 0.9)
