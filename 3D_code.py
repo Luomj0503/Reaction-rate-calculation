@@ -150,7 +150,7 @@ class FrontEnd(BackEnd):
 
     def NavigationBar(self):
         with st.sidebar:
-            nav = option_menu('Navegation:', ['HOME', 'Printability','About','Citation','Contact'],
+            nav = option_menu('Contents:', ['HOME', 'Printability','About','Citation','Contact'],
                               icons=['house', 'book','box-arrow-in-left', 'journal-check',  'chat-left-text-fill'],
                               menu_icon="cast", default_index=0,styles={
                     "container": {"padding": "5!important", "background-color": "#fafafa"},"icon": {"color": "orange", "font-size": "25px"},
