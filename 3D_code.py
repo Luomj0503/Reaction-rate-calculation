@@ -30,7 +30,6 @@ class BackEnd:
         self.OS_morgan_xgb = None
         self.OS_morgan_nn = None
         self.OS_morgan_rf = None
-        self.ad = ApplicabilityDomain()
         BackEnd.__load_models(self)
 
     #@st.cache_data
