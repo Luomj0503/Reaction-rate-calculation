@@ -5,18 +5,12 @@ import streamlit_option_menu
 from streamlit_option_menu import option_menu
 import base64
 import textwrap
-from Similarity_calculation import ApplicabilityDomain
 
 from texts import Texts
 import pickle
 import cirpy
 import os
-import rdkit
-from rdkit import Chem
-from rdkit.Chem import AllChem, Draw
-from rdkit.Chem import MACCSkeys
-from rdkit.Chem import rdDepictor, Descriptors
-from rdkit.Chem.Draw import rdMolDraw2D
+
 from PIL import Image
 import seaborn as sns
 sns.set_style('darkgrid')
@@ -87,15 +81,12 @@ class FrontEnd(BackEnd):
             st.markdown('{}'.format(self.text1), unsafe_allow_html=True)  # general description
             st.markdown('{}'.format(self.text1_2), unsafe_allow_html=True)  # The prediction of FeS
             st.image(IMG_Fig1)  # figure of 3D_flow
-            st.markdown('{}'.format(self.text1_3), unsafe_allow_html=True)  # The prediction of O3
             col1, col2, col3 = st.columns([0.2, 5, 0.2])
-            col2.image(IMG_Fig2, use_column_width=True)  # figure of O3
         if nav == 'Printability':
             st.title('Simulation of Printability by Different Printing Conditions')
             Pressure = st.number_input('Choose Pressure(Pa)',0.0, 120.0)
             Speed = st.number_input('Choose Speed(mm/s)',0.0, 10.0)
             Nozzle_Diameter = st.number_input("Diameter of nozzle(mm)", 0, 0.9)
-            S_Fe = st.number_input("Ratio of Sulfur Content to Iron Content", 0.0, 0.4)
             Con = st.number_input("Concentration of Sodium alginate ink", 0.0, 0.2)
             cmodels = st.multiselect("Choose ML Models", ("XGBoost", "Neural Network", "Random Forest"),
                                      default="Neural Network")
@@ -103,94 +94,52 @@ class FrontEnd(BackEnd):
             if generate:
                 for i in cmodels:
                     if i =="XGBoost":
-                        fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
-                        fp = fp.reshape(1, -1)
-                        feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
+                        np = []
+                        feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)
-                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                        pred = self.3D_xgb.predict(feature_w_smiles)
+                        if pred > = 0.9:
+                            printability = 'excellent'
+                        elif 0.9> pred > = 0.8:
+                            printability = 'good'
+                        elif 0.8> pred > = 0.7 :
+                            printability = 'Ok'
+                        elif 0.7> pred :
+                            printability = 'bad'                            
+                        st.markdown('## {}: {} '.format(i, printability),unsafe_allow_html=True)
+                        
                     elif i =="Neural Network":
-                        fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
-                        fp = fp.reshape(1, -1)
-                        feature_w_smiles = np.append(fp,[pH, T, Cod, S_Fe, FeS_con])
-                        feature_w_smiles = feature_w_smiles.reshape(1,-1)
-                        pred = self.kS_morgan_nn.predict(feature_w_smiles)
-                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
-                    elif i =="Random Forest":
-                        fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
-                        fp = fp.reshape(1, -1)
-                        feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
+                        np = []
+                        feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.kS_morgan_rf.predict(feature_w_smiles)
-                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
-                    # calc AD
-                    sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='morgan',radical='kFeS')
-                    st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
-                            (sim * 100).round(2)), unsafe_allow_html=True)
-                    
-            if fprints =="MACCS":
-                for i in cmodels:
-                    if i =="XGBoost":
-                        fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
-                        fp = fp.reshape(1, -1)
-                        feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
-                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)#change method
-                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
-                    elif i =="Neural Network":
-                        fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
-                        fp = fp.reshape(1, -1)
-                        feature_w_smiles = np.append(fp,[pH, T, Cod, S_Fe, FeS_con])
-                        feature_w_smiles = feature_w_smiles.reshape(1,-1)
-                        pred = self.kS_morgan_nn.predict(feature_w_smiles)#change method
-                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
-                    elif i =="Random Forest":
-                        fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
-                        fp = fp.reshape(1, -1)
-                        feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
-                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.kS_morgan_rf.predict(feature_w_smiles)#change method
-                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
-                    # calc AD
-                    sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='maccs',radical='kFeS')
-                    st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
-                            (sim * 100).round(2)), unsafe_allow_html=True)
-                    
-                    
-            if fprints =="Both":
-                for i in cmodels:
-                    if i =="XGBoost":
-                        fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
-                        fp1 = fp1.reshape(1, -1)
-                        fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
-                        fp2 = fp2.reshape(1, -1)
-                        feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, S_Fe, FeS_con])
-                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)#change method
-                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
-                    elif i =="Neural Network":
-                        fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
-                        fp1 = fp1.reshape(1, -1)
-                        fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
-                        fp2 = fp2.reshape(1, -1)
-                        feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, S_Fe, FeS_con])
-                        feature_w_smiles = feature_w_smiles.reshape(1,-1)
-                        pred = self.kS_morgan_nn.predict(feature_w_smiles)#change method
-                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
-                    elif i =="Random Forest":
-                        fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
-                        fp1 = fp1.reshape(1, -1)
-                        fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
-                        fp2 = fp2.reshape(1, -1)
-                        feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, S_Fe, FeS_con])
-                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.kS_morgan_rf.predict(feature_w_smiles)#change method
-                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
-                    # calc AD
-                    sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='both',radical='kFeS')
-                    st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
-                            (sim * 100).round(2)), unsafe_allow_html=True)
+                        pred = self.3D_xgb.predict(feature_w_smiles)
+                        if pred > = 0.9:
+                            printability = 'excellent'
+                        elif 0.9> pred > = 0.8:
+                            printability = 'good'
+                        elif 0.8> pred > = 0.7 :
+                            printability = 'Ok'
+                        elif 0.7> pred :
+                            printability = 'bad'
+                        st.markdown('## {}: {} '.format(i, printability),unsafe_allow_html=True)
 
+                    elif i =="Random Forest":
+                        np = []
+                        feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
+                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        pred = self.3D_xgb.predict(feature_w_smiles)
+                        if pred > = 0.9:
+                            printability = 'excellent'
+                        elif 0.9> pred > = 0.8:
+                            printability = 'good'
+                        elif 0.8> pred > = 0.7 :
+                            printability = 'Ok'
+                        elif 0.7> pred :
+                            printability = 'bad' 
+                        st.markdown('## {}: {} '.format(i, printability),unsafe_allow_html=True)
+
+                    
+            
         if nav == 'About':
             st.markdown('{}'.format(self.text3), unsafe_allow_html=True)
 
@@ -219,8 +168,8 @@ class FrontEnd(BackEnd):
 
     def NavigationBar(self):
         with st.sidebar:
-            nav = option_menu('Navegation:', ['HOME', 'S-ZVI Reaction Rate Simulation','O3 Reaction Rate Simulation','About','Citation','Contact'],
-                              icons=['house', 'water', 'book','box-arrow-in-left', 'journal-check',  'chat-left-text-fill'],
+            nav = option_menu('Navegation:', ['HOME', 'Printability','About','Citation','Contact'],
+                              icons=['house', 'book','box-arrow-in-left', 'journal-check',  'chat-left-text-fill'],
                               menu_icon="cast", default_index=0,styles={
                     "container": {"padding": "5!important", "background-color": "#fafafa"},"icon": {"color": "orange", "font-size": "25px"},
 "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},"nav-link-selected": {"background-color": "#02ab21"},})
