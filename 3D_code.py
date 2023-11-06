@@ -5,6 +5,8 @@ import streamlit_option_menu
 from streamlit_option_menu import option_menu
 import base64
 import textwrap
+import tensorflow as tf
+from tensorflow import keras
 
 from texts import Texts
 import pickle
@@ -31,9 +33,9 @@ class BackEnd:
 
     #@st.cache_data
     def __load_models(self):
-        self.D_nn = pickle.load(open("3D_Models/DNN_mdl1.dat", 'rb'))
-        self.D_xgb = pickle.load(open("3D_Models/DNN_mdl2.dat", 'rb'))
-        self.D_rf= pickle.load(open("3D_Models/DNN_mdl2.dat", 'rb'))
+        self.D_nn = tf.keras.models.load_model(f'3D_Models/DNN_mdl3.hdf5')
+        self.D_xgb = tf.keras.models.load_model(f'3D_Models/DNN_mdl3.hdf5')
+        self.D_rf= tf.keras.models.load_model(f'3D_Models/DNN_mdl3.hdf5')
         
 
     
