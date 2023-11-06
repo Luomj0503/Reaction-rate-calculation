@@ -24,22 +24,18 @@ IMG_Fig2 = Image.open('picture/O3.png')
 
 class BackEnd:
     def __init__(self):
-        self.kS_morgan_xgb = None
-        self.kS_morgan_nn = None
-        self.kS_morgan_rf = None
-        self.OS_morgan_xgb = None
-        self.OS_morgan_nn = None
-        self.OS_morgan_rf = None
+        self.3D_nn = None
+        self.3D_xgb = None
+        self.3D_rf = None
+        
         BackEnd.__load_models(self)
 
     #@st.cache_data
     def __load_models(self):
-        self.kS_morgan_xgb = pickle.load(open(r'Models/FeS-1206XGB_mdl1.dat', 'rb'))
-        self.kS_morgan_nn = pickle.load(open("Models/FeS-1206XGB_mdl2.dat", 'rb'))
-        self.kS_morgan_rf= pickle.load(open("Models/FeS-1206XGB_mdl3.dat", 'rb'))
-        self.OS_morgan_xgb = pickle.load(open(r'Models/O3 all new-1206XGB_mdl1.dat', 'rb'))
-        self.OS_morgan_nn = pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
-        self.OS_morgan_rf= pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
+        self.3D_nn = pickle.load(open(r'3D_Models/DNN_mdl1.dat', 'rb'))
+        self.3D_xgb = pickle.load(open("3D_Models/DNN_mdl2.dat", 'rb'))
+        self.3D_rf= pickle.load(open("3D_Models/DNN_mdl2.dat", 'rb'))
+        
 
     
 
@@ -79,7 +75,7 @@ class FrontEnd(BackEnd):
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)
+                        pred = self.3D_xgb.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
                         elif 0.9> pred >= 0.8:
@@ -94,7 +90,7 @@ class FrontEnd(BackEnd):
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)
+                        pred = self.3D_nn.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
                         elif 0.9> pred >= 0.8:
@@ -109,7 +105,7 @@ class FrontEnd(BackEnd):
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)
+                        pred = self.3D_rf.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
                         elif 0.9> pred >= 0.8:
