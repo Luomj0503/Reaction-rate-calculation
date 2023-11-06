@@ -75,7 +75,7 @@ class FrontEnd(BackEnd):
                     if i =="XGBoost":
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
-                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        #feature_w_smiles = feature_w_smiles.reshape(1, -1)
                         pred = self.D_xgb.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
@@ -90,7 +90,7 @@ class FrontEnd(BackEnd):
                     elif i =="Neural Network":
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
-                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        #feature_w_smiles = feature_w_smiles.reshape(1, -1)
                         pred = self.D_nn.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
@@ -105,7 +105,7 @@ class FrontEnd(BackEnd):
                     elif i =="Random Forest":
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
-                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        #feature_w_smiles = feature_w_smiles.reshape(1, -1)
                         pred = self.D_rf.predict(feature_w_smiles)
                         if pred >= 0.9:
                             printability = 'excellent'
