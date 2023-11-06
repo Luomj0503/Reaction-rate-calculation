@@ -1,58 +1,232 @@
 import numpy as np
-from numpy import log, e
-from math import sqrt
 import pandas as pd
-from tqdm import tqdm
+import streamlit as st
+import streamlit_option_menu
+from streamlit_option_menu import option_menu
+import base64
+import textwrap
+from Similarity_calculation import ApplicabilityDomain
 
-class Similarity:
+from texts import Texts
+import pickle
+import cirpy
+import os
+import rdkit
+from rdkit import Chem
+from rdkit.Chem import AllChem, Draw
+from rdkit.Chem import MACCSkeys
+from rdkit.Chem import rdDepictor, Descriptors
+from rdkit.Chem.Draw import rdMolDraw2D
+from PIL import Image
+import seaborn as sns
+sns.set_style('darkgrid')
+import matplotlib.pyplot as plt
+#from state import count_sessions
+#count_sessions()
+
+IMAGE_SUPP = Image.open('picture/3D_flow.png')
+IMG_Fig1 = Image.open('picture/3D_flow.png')
+IMG_Fig2 = Image.open('picture/O3.png')
+
+class BackEnd:
     def __init__(self):
-        pass
+        self.kS_morgan_xgb = None
+        self.kS_morgan_nn = None
+        self.kS_morgan_rf = None
+        self.OS_morgan_xgb = None
+        self.OS_morgan_nn = None
+        self.OS_morgan_rf = None
+        self.ad = ApplicabilityDomain()
+        self.base_train_kO3_morgan, self.base_train_kFeS_morgan, self.base_train_kO3_maccs, self.base_train_kFeS_maccs, self.base_train_kO3_both, self.base_train_kFeS_both = BackEnd.__load_basestrain(self)
 
-    def __coefs(self, vetor1, vetor2):
-        A = np.array(vetor1).astype(int)
-        B = np.array(vetor2).astype(int)
+        BackEnd.__load_models(self)
 
-        AnB = A & B  # intersection
-        onlyA = np.array(B) < np.array(A)  # A is a subset of B
-        onlyB = np.array(A) < np.array(B)  # B is a subset of A
-        AuB_0s = A | B  # Uniao (for count de remain zeros)
+    #@st.cache_data
+    def __load_models(self):
+        self.kS_morgan_xgb = pickle.load(open(r'Models/FeS-1206XGB_mdl1.dat', 'rb'))
+        self.kS_morgan_nn = pickle.load(open("Models/FeS-1206XGB_mdl2.dat", 'rb'))
+        self.kS_morgan_rf= pickle.load(open("Models/FeS-1206XGB_mdl3.dat", 'rb'))
+        self.OS_morgan_xgb = pickle.load(open(r'Models/O3 all new-1206XGB_mdl1.dat', 'rb'))
+        self.OS_morgan_nn = pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
+        self.OS_morgan_rf= pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
 
-        return AnB, onlyA, onlyB, np.count_nonzero(AuB_0s == 0)
+    def __load_basestrain(self):
+        kO3_morgan = 'Similarity_calculation/MF_O3.csv'
+        kFeS_morgan = 'Similarity_calculation/MF_FeS.csv'
+        kO3_maccs = 'Similarity_calculation/MACCS_O3.csv'
+        kFeS_maccs = 'Similarity_calculation/MACCS_FeS.csv'
+        kO3_both = 'Similarity_calculation/Both_O3.csv'
+        kFeS_both = 'Similarity_calculation/Both_FeS.csv'
 
-    def tanimoto_similarity(self, vetor1, vetor2):
-        """
-        Structural similarity calculation based on tanimoto index.
-        T(A,B) = (A ^ B)/(A + B - A^B)
-        """
-        AnB, onlyA, onlyB, AuB_0s = Similarity.__coefs(self, vetor1=vetor1, vetor2=vetor2)
-        return AnB.sum() / (onlyA.sum() + onlyB.sum() + AnB.sum())
+        self.base_train_kO3_morgan = pd.read_csv(kO3_morgan).values
+        self.base_train_kFeS_morgan = pd.read_csv(kFeS_morgan).values
+        self.base_train_kO3_maccs = pd.read_csv(kO3_maccs).values
+        self.base_train_kFeS_maccs = pd.read_csv(kFeS_maccs).values
+        self.base_train_kO3_both = pd.read_csv(kO3_both).values
+        self.base_train_kFeS_both = pd.read_csv(kFeS_both).values
+        return self.base_train_kO3_morgan, self.base_train_kFeS_morgan, self.base_train_kO3_maccs, self.base_train_kFeS_maccs, self.base_train_kO3_both, self.base_train_kFeS_both
 
+class FrontEnd(BackEnd):
+    def __init__(self):
+        super().__init__()
+        gettext = Texts()
+        self.text1 = gettext.text1()
+        self.text1_2 = gettext.text1_2()
+        self.text1_3 = gettext.text1_3()
+        self.text1_4 = gettext.text1_4()
+        self.text2 = gettext.text2()
+        self.text3 = gettext.text3()
+        FrontEnd.main(self)
 
-class ApplicabilityDomain:
-    def __init__(self, verbose=False):
-        self.__sims = Similarity()
-        self.__verbose = verbose
-        self.similarities_table_ = None
+    def main(self):
+        nav = FrontEnd.NavigationBar(self)
 
-    def analyze_similarity(self, base_test, base_train):
-        print(base_test, base_train)
-        get_tests_similarities = []
-        similarities = []
-        sim = []
-        # get dictionary of all data tests similarities
-        for n,i_train in enumerate(base_train):
-            get_tests_similarities.append(self.__sims.tanimoto_similarity(base_test, i_train))
-            similarities = np.array(get_tests_similarities)
-            get_tests_similarities = []
-            sim.append(similarities)
-        sim = np.array(sim)
-        self.similarities_table_ = pd.DataFrame(sim)
-        analyze = pd.concat([self.similarities_table_.mean(),
-                             self.similarities_table_.median(),
-                             self.similarities_table_.std(),
-                             self.similarities_table_.max(),
-                             self.similarities_table_.min()],
-                            axis=1)
-        analyze.columns = ['Mean', 'Median', 'Std', 'Max', 'Min']
+        # HOME
+        if nav == 'HOME':
+            st.header('Printability Under Different Printing Conditions by Python Simulator')
+            st.markdown('{}'.format(self.text1), unsafe_allow_html=True)  # general description
+            st.markdown('{}'.format(self.text1_2), unsafe_allow_html=True)  # The prediction of FeS
+            st.image(IMG_Fig1)  # figure of 3D_flow
+            st.markdown('{}'.format(self.text1_3), unsafe_allow_html=True)  # The prediction of O3
+            col1, col2, col3 = st.columns([0.2, 5, 0.2])
+            col2.image(IMG_Fig2, use_column_width=True)  # figure of O3
+        if nav == 'Printability':
+            st.title('Simulation of Printability by Different Printing Conditions')
+            Pressure = st.number_input('Choose Pressure(Pa)',0.0, 120.0)
+            Speed = st.number_input('Choose Speed(mm/s)',0.0, 10.0)
+            Nozzle_Diameter = st.number_input("Diameter of nozzle(mm)", 0, 0.9)
+            S_Fe = st.number_input("Ratio of Sulfur Content to Iron Content", 0.0, 0.4)
+            Con = st.number_input("Concentration of Sodium alginate ink", 0.0, 0.2)
+            cmodels = st.multiselect("Choose ML Models", ("XGBoost", "Neural Network", "Random Forest"),
+                                     default="Neural Network")
+            generate = st.button("Generate")
+            if generate:
+                for i in cmodels:
+                    if i =="XGBoost":
+                        fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                        fp = fp.reshape(1, -1)
+                        feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
+                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)
+                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                    elif i =="Neural Network":
+                        fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                        fp = fp.reshape(1, -1)
+                        feature_w_smiles = np.append(fp,[pH, T, Cod, S_Fe, FeS_con])
+                        feature_w_smiles = feature_w_smiles.reshape(1,-1)
+                        pred = self.kS_morgan_nn.predict(feature_w_smiles)
+                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                    elif i =="Random Forest":
+                        fp, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                        fp = fp.reshape(1, -1)
+                        feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
+                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        pred = self.kS_morgan_rf.predict(feature_w_smiles)
+                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                    # calc AD
+                    sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='morgan',radical='kFeS')
+                    st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
+                            (sim * 100).round(2)), unsafe_allow_html=True)
+                    
+            if fprints =="MACCS":
+                for i in cmodels:
+                    if i =="XGBoost":
+                        fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                        fp = fp.reshape(1, -1)
+                        feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
+                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)#change method
+                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                    elif i =="Neural Network":
+                        fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                        fp = fp.reshape(1, -1)
+                        feature_w_smiles = np.append(fp,[pH, T, Cod, S_Fe, FeS_con])
+                        feature_w_smiles = feature_w_smiles.reshape(1,-1)
+                        pred = self.kS_morgan_nn.predict(feature_w_smiles)#change method
+                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                    elif i =="Random Forest":
+                        fp = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                        fp = fp.reshape(1, -1)
+                        feature_w_smiles = np.append(fp, [pH, T, Cod, S_Fe, FeS_con])
+                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        pred = self.kS_morgan_rf.predict(feature_w_smiles)#change method
+                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                    # calc AD
+                    sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='maccs',radical='kFeS')
+                    st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
+                            (sim * 100).round(2)), unsafe_allow_html=True)
+                    
+                    
+            if fprints =="Both":
+                for i in cmodels:
+                    if i =="XGBoost":
+                        fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                        fp1 = fp1.reshape(1, -1)
+                        fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                        fp2 = fp2.reshape(1, -1)
+                        feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, S_Fe, FeS_con])
+                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)#change method
+                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                    elif i =="Neural Network":
+                        fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                        fp1 = fp1.reshape(1, -1)
+                        fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                        fp2 = fp2.reshape(1, -1)
+                        feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, S_Fe, FeS_con])
+                        feature_w_smiles = feature_w_smiles.reshape(1,-1)
+                        pred = self.kS_morgan_nn.predict(feature_w_smiles)#change method
+                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                    elif i =="Random Forest":
+                        fp1 = FrontEnd._makeMaccsFingerprint(self, smiles=smi_casrn)
+                        fp1 = fp1.reshape(1, -1)
+                        fp2, frags = FrontEnd._makeMorganFingerPrint(self, smiles=smi_casrn, nbits=2048, raio=2)
+                        fp2 = fp2.reshape(1, -1)
+                        feature_w_smiles = np.append(fp1, fp2, [pH, T, Cod, S_Fe, FeS_con])
+                        feature_w_smiles = feature_w_smiles.reshape(1, -1)
+                        pred = self.kS_morgan_rf.predict(feature_w_smiles)#change method
+                        st.markdown('## {}: {} h<sup>-1'.format(i, pred),unsafe_allow_html=True)
+                    # calc AD
+                    sim = FrontEnd._applicabilitydomain(self, data=fp, typefp='both',radical='kFeS')
+                    st.markdown('<font color="green">The molecule is with the applicability domain. ({}% Similarity)</font>'.format(
+                            (sim * 100).round(2)), unsafe_allow_html=True)
 
-        return analyze
+        if nav == 'About':
+            st.markdown('{}'.format(self.text3), unsafe_allow_html=True)
+
+        if nav == 'Citation':
+            st.markdown('{}'.format(self.text1_4), unsafe_allow_html=True)
+
+        if nav == 'Contact':
+            # st.header(":mailbox: Entre em contato comigo!!")
+            st.header("Contact me!!")
+            contact_form = """
+                    <form action="https://formsubmit.co/mphyschemlab@gmail.com" method="POST">
+                     <input type="hidden" name="_captcha" value="false">
+                     <input type="text" name="name" placeholder="Your name" optional>
+                     <input type="email" name="email" placeholder="Your e-mail" optional>
+                     <textarea name="message" placeholder="Type your message here"></textarea>
+                     <button type="submit">Send</button>
+                    </form>
+                    """
+
+            st.markdown(contact_form, unsafe_allow_html=True)
+            FrontEnd.local_css("style.css")
+
+    def local_css(file_name):
+        with open(file_name) as f:
+            return st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+    def NavigationBar(self):
+        with st.sidebar:
+            nav = option_menu('Navegation:', ['HOME', 'S-ZVI Reaction Rate Simulation','O3 Reaction Rate Simulation','About','Citation','Contact'],
+                              icons=['house', 'water', 'book','box-arrow-in-left', 'journal-check',  'chat-left-text-fill'],
+                              menu_icon="cast", default_index=0,styles={
+                    "container": {"padding": "5!important", "background-color": "#fafafa"},"icon": {"color": "orange", "font-size": "25px"},
+"nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},"nav-link-selected": {"background-color": "#02ab21"},})
+            st.sidebar.markdown('# Contribute')
+            st.sidebar.info('{}'.format(self.text2))
+        return nav
+if __name__ == '__main__':
+    run = FrontEnd()
+
