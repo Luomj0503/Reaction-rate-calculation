@@ -44,29 +44,14 @@ class BackEnd:
         self.OS_morgan_nn = pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
         self.OS_morgan_rf= pickle.load(open("Models/O3 all new-1206XGB_mdl1.dat", 'rb'))
 
-    def __load_basestrain(self):
-        kO3_morgan = 'Similarity_calculation/MF_O3.csv'
-        kFeS_morgan = 'Similarity_calculation/MF_FeS.csv'
-        kO3_maccs = 'Similarity_calculation/MACCS_O3.csv'
-        kFeS_maccs = 'Similarity_calculation/MACCS_FeS.csv'
-        kO3_both = 'Similarity_calculation/Both_O3.csv'
-        kFeS_both = 'Similarity_calculation/Both_FeS.csv'
-
-        self.base_train_kO3_morgan = pd.read_csv(kO3_morgan).values
-        self.base_train_kFeS_morgan = pd.read_csv(kFeS_morgan).values
-        self.base_train_kO3_maccs = pd.read_csv(kO3_maccs).values
-        self.base_train_kFeS_maccs = pd.read_csv(kFeS_maccs).values
-        self.base_train_kO3_both = pd.read_csv(kO3_both).values
-        self.base_train_kFeS_both = pd.read_csv(kFeS_both).values
-        return self.base_train_kO3_morgan, self.base_train_kFeS_morgan, self.base_train_kO3_maccs, self.base_train_kFeS_maccs, self.base_train_kO3_both, self.base_train_kFeS_both
+    
 
 class FrontEnd(BackEnd):
     def __init__(self):
         super().__init__()
         gettext = Texts()
-        self.text1 = gettext.text1()
-        self.text1_2 = gettext.text1_2()
-        self.text1_3 = gettext.text1_3()
+        self.text1 = gettext.text10()
+        self.text1_2 = gettext.text10_2()
         self.text1_4 = gettext.text1_4()
         self.text2 = gettext.text2()
         self.text3 = gettext.text3()
@@ -78,8 +63,8 @@ class FrontEnd(BackEnd):
         # HOME
         if nav == 'HOME':
             st.header('Printability Under Different Printing Conditions by Python Simulator')
-            st.markdown('{}'.format(self.text1), unsafe_allow_html=True)  # general description
-            st.markdown('{}'.format(self.text1_2), unsafe_allow_html=True)  # The prediction of FeS
+            st.markdown('{}'.format(self.text10), unsafe_allow_html=True)  # general description
+            st.markdown('{}'.format(self.text10_2), unsafe_allow_html=True)  # The prediction of FeS
             st.image(IMG_Fig1)  # figure of 3D_flow
             col1, col2, col3 = st.columns([0.2, 5, 0.2])
         if nav == 'Printability':
