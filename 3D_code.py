@@ -31,8 +31,6 @@ class BackEnd:
         self.OS_morgan_nn = None
         self.OS_morgan_rf = None
         self.ad = ApplicabilityDomain()
-        self.base_train_kO3_morgan, self.base_train_kFeS_morgan, self.base_train_kO3_maccs, self.base_train_kFeS_maccs, self.base_train_kO3_both, self.base_train_kFeS_both = BackEnd.__load_basestrain(self)
-
         BackEnd.__load_models(self)
 
     #@st.cache_data
@@ -82,7 +80,7 @@ class FrontEnd(BackEnd):
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.3D_xgb.predict(feature_w_smiles)
+                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)
                         if pred > = 0.9:
                             printability = 'excellent'
                         elif 0.9> pred > = 0.8:
@@ -97,7 +95,7 @@ class FrontEnd(BackEnd):
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.3D_xgb.predict(feature_w_smiles)
+                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)
                         if pred > = 0.9:
                             printability = 'excellent'
                         elif 0.9> pred > = 0.8:
@@ -112,7 +110,7 @@ class FrontEnd(BackEnd):
                         np = []
                         feature_w_smiles = np.append([Pressure, Speed, Nozzle_Diameter, Con])
                         feature_w_smiles = feature_w_smiles.reshape(1, -1)
-                        pred = self.3D_xgb.predict(feature_w_smiles)
+                        pred = self.kS_morgan_xgb.predict(feature_w_smiles)
                         if pred > = 0.9:
                             printability = 'excellent'
                         elif 0.9> pred > = 0.8:
