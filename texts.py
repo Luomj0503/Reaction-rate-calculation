@@ -87,3 +87,32 @@ class Texts:
 
         return TEXT3
 
+
+    def text10(_self):
+        TEXT1 = """
+        <body style='text-align: justify; color: black;'>
+        <p> We constructed a machine learning model to evaluate the printability of sodium alginate inks under different printing conditions
+        The models present in this work were built using <a href="https://scikit-learn.org/stable/"target="_blank">scikit-learn</a> and <a href="https://xgboost.readthedocs.io/en/latest/python/python_api.html"target="_blank">XGBoost</a> packages.
+        The predict values can be confronted with experimental values available in our work.
+        </p>
+        </body>         
+        """
+
+        return TEXT1
+
+    def text10_2(_self):
+        TEX1_2 = """
+        ###  Evaluate the printability of sodium alginate inks under different printing conditions by Machine Learning
+        <body style='text-align: justify; color: black;'>
+        <p>
+        We conducted more than 200 experiments of our own, and set up a set of evaluation criteria to evaluate the printability of the ink. The input characteristic variables
+        are pressure, printing speed, nozzle diameter and sodium alginate concentration. While rate constants are the dependent variables of our model developed implemented in six 
+        machine learning algorithms – Gradient Boosted Regression Tree(GBRT), Desicion Tree(DT), Support Vector Regression(SVR),XGboost (XBG), Random Forest (RF) 
+        and Neural Network (NN).We found that the Neural Network and Gradient Boosted Regression Tree made the best predictions, then interpreted the model by SHAP.
+        At the same time, the optimal printing parameters are deduced by ion swarm algorithm and verified by degradation experiment.
+        </p>
+        </body>
+        """
+
+        return TEX1_2
+
